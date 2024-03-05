@@ -33,24 +33,24 @@ reintegrate_changes() {
 # Actualizar versión según las condiciones
 if [[ $base_branch == 'dev' ]]; then
     if [[ $branch_name == *feat/* ]]; then
-        handle_version "${{ github.event.action }}" "${{ github.event.pull_request.merged }}" "prerelease --preid=alpha"
+        handle_version "${GITHUB_EVENT.action}" "${GITHUB_EVENT.pull_request.merged}" "prerelease --preid=alpha"
     elif [[ $branch_name == *reintegrate/* ]]; then
-        handle_version "${{ github.event.action }}" "${{ github.event.pull_request.merged }}" "--no-git-tag-version version minor"
+        handle_version "${GITHUB_EVENT.action}" "${GITHUB_EVENT.pull_request.merged}" "--no-git-tag-version version minor"
         npm version prerelease --preid=alpha --force
     fi
 
 elif [[ $base_branch == 'qa' ]]; then
     if [[ $branch_name == 'dev' ]]; then
-        handle_version "${{ github.event.action }}" "${{ github.event.pull_request.merged }}" "prerelease --preid=beta"
+        handle_version "${GITHUB_EVENT.action}" "${GITHUB_EVENT.pull_request.merged}" "prerelease --preid=beta"
     elif [[ $branch_name == *fix/* ]]; then
-        handle_version "${{ github.event.action }}" "${{ github.event.pull_request.merged }}" "version patch"
+        handle_version "${GITHUB_EVENT.action}" "${GITHUB_EVENT.pull_request.merged}" "version patch"
     fi
 
 elif [[ $base_branch == 'master' ]]; then
     if [[ $branch_name == 'qa' ]]; then
-        handle_version "${{ github.event.action }}" "${{ github.event.pull_request.merged }}" "version minor"
+        handle_version "${GITHUB_EVENT.action}" "${GITHUB_EVENT.pull_request.merged}" "version minor"
     elif [[ $branch_name == *fix/* ]]; then
-        handle_version "${{ github.event.action }}" "${{ github.event.pull_request.merged }}" "version patch"
+        handle_version "${GITHUB_EVENT.action}" "${GITHUB_EVENT.pull_request.merged}" "version patch"
     fi
 fi
 
@@ -67,4 +67,4 @@ git checkout $base_branch
 git push origin $base_branch --follow-tags || true
 
 # Reintegrar cambios si es necesario
-reintegrate_changes "${{ github.event.action }}" "${{ github.event.pull_request.merged }}" "$base_branch" "$branch_name"
+reintegrate_changes "${GITHUB_EVENT.action}" "${GITHUB_EVENT.pull_request.merged}" "$base_branch" "$branch_name"
