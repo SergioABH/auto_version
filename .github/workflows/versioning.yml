@@ -97,7 +97,7 @@ jobs:
 
       - name: Reintegrate Changes
         run: |
-          if [[ ${{ github.event.action }} == 'closed' && ${{ github.event.pull_request.merged }} == 'true' && ${{ github.event.pull_request.base.ref }} == 'master' && ${{ github.event.pull_request.head.ref }} == *'hotfix'* ]]; then
+          if [[ ${{ github.event.action }} == 'closed' && ${{ github.event.pull_request.merged }} == 'true' && ${{ github.event.pull_request.base.ref }} == 'master' ]]; then
 
             version=$(git describe --tags --abbrev=0 $(git rev-list --tags --max-count=1 master))
             reintegrate_branch="reintegrate/$version"
