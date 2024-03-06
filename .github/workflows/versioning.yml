@@ -34,19 +34,7 @@ jobs:
           base_branch=$(jq -r .pull_request.base.ref $GITHUB_EVENT_PATH)
           branch_name=$(jq -r .pull_request.head.ref $GITHUB_EVENT_PATH)
 
-          if [[ $base_branch == 'dev' ]]; then
-            if [[ $branch_name == *feat/* ]]; then
-              if [[ ${{ github.event.action }} == 'closed' && ${{ github.event.pull_request.merged }} == 'true' ]]; then
-                npm version prerelease --preid=alpha
-              fi
-            elif [[ $branch_name == *reintegrate/* ]]; then
-              if [[ ${{ github.event.action }} == 'closed' && ${{ github.event.pull_request.merged }} == 'true' ]]; then
-                new_version=$(npm --no-git-tag-version version minor)
-                new_version="${new_version}-alpha.0"
-              fi
-            fi
-
-          elif [[ $base_branch == 'qa' ]]; then
+          if [[ $base_branch == 'qa' ]]; then
             if [[ $branch_name == 'dev' ]]; then
               if [[ ${{ github.event.action }} == 'closed' && ${{ github.event.pull_request.merged }} == 'true' ]]; then
                 npm version prerelease --preid=beta
