@@ -1,4 +1,4 @@
-name: Automatic_Version2
+name: Automatic_Version
 
 on:
   pull_request:
@@ -41,7 +41,7 @@ jobs:
               fi
             elif [[ $branch_name == *fix/* ]]; then
               if [[ ${{ github.event.action }} == 'closed' && ${{ github.event.pull_request.merged }} == 'true' ]]; then
-                npm version patch
+                npm version prepatch --preid=beta
               fi
             fi
           
