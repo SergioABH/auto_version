@@ -37,7 +37,7 @@ jobs:
           if [[ $base_branch == 'qa' ]]; then
             if [[ $branch_name == 'dev' ]]; then
               if [[ ${{ github.event.action }} == 'closed' && ${{ github.event.pull_request.merged }} == 'true' ]]; then
-                npm version prerelease --preid=beta
+                npm --no-git-tag-version version prerelease --preid=beta
               fi
             elif [[ $branch_name == *fix/* ]]; then
               if [[ ${{ github.event.action }} == 'closed' && ${{ github.event.pull_request.merged }} == 'true' ]]; then
