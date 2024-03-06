@@ -41,8 +41,7 @@ jobs:
               fi
             elif [[ $branch_name == *reintegrate/* ]]; then
               if [[ ${{ github.event.action }} == 'closed' && ${{ github.event.pull_request.merged }} == 'true' ]]; then
-                new_version=$(npm --no-git-tag-version version minor)
-                new_version="${new_version}-alpha.0"
+                npm version preminor --preid=alpha
               fi
             fi
 
