@@ -7,26 +7,26 @@ git config --global user.name "GitHub Actions"
 
 # Determine Version
 echo "Determining version..."
-base_branch=$(jq -r .pull_request.base.ref $GITHUB_EVENT_PATH)
-branch_name=$(jq -r .pull_request.head.ref $GITHUB_EVENT_PATH)
+base_branch=$(jq -r .pull_request.base.ref "$GITHUB_EVENT_PATH")
+branch_name=$(jq -r .pull_request.head.ref "$GITHUB_EVENT_PATH")
 
 if [[ $base_branch == 'qa' ]]; then
   if [[ $branch_name == 'dev' ]]; then
-    if [[ ${{ github.event.action }} == 'closed' && ${{ github.event.pull_request.merged }} == 'true' ]]; then
+    if [[ "$GITHUB_EVENT_NAME" == 'pull_request' && "$GITHUB_EVENT_ACTION" == 'closed' && "$GITHUB_EVENT_PULL_REQUEST_MERGED" == 'true' ]]; then
       npm version prerelease --preid=beta
     fi
   elif [[ $branch_name == *fix/* ]]; then
-    if [[ ${{ github.event.action }} == 'closed' && ${{ github.event.pull_request.merged }} == 'true' ]]; then
+    if [[ "$GITHUB_EVENT_NAME" == 'pull_request' && "$GITHUB_EVENT_ACTION" == 'closed' && "$GITHUB_EVENT_PULL_REQUEST_MERGED" == 'true' ]]; then
       npm version prepatch --preid=beta
     fi
   fi
 elif [[ $base_branch == 'master' ]]; then
   if [[ $branch_name == 'qa' ]]; then
-    if [[ ${{ github.event.action }} == 'closed' && ${{ github.event.pull_request.merged }} == 'true' ]]; then
+    if [[ "$GITHUB_EVENT_NAME" == 'pull_request' && "$GITHUB_EVENT_ACTION" == 'closed' && "$GITHUB_EVENT_PULL_REQUEST_MERGED" == 'true' ]]; then
       npm version minor
     fi
   elif [[ $branch_name == *fix/* ]]; then
-    if [[ ${{ github.event.action }} == 'closed' && ${{ github.event.pull_request.merged }} == 'true' ]]; then
+    if [[ "$GITHUB_EVENT_NAME" == 'pull_request' && "$GITHUB_EVENT_ACTION" == 'closed' && "$GITHUB_EVENT_PULL_REQUEST_MERGED" == 'true' ]]; then
       npm version patch
     fi
   fi
@@ -51,7 +51,7 @@ git push origin $base_branch --follow-tags || true
 
 # Reintegrate Changes
 echo "Reintegrating changes..."
-if [[ ${{ github.event.action }} == 'closed' && ${{ github.event.pull_request.merged }} == 'true' && ${{ github.event.pull_request.base.ref }} == $base_branch ]]; then
+if [[ "$GITHUB_EVENT_NAME" == 'pull_request' && "$GITHUB_EVENT_ACTION" == 'closed' && "$GITHUB_EVENT_PULL_REQUEST_MERGED" == 'true' && "$GITHUB_EVENT_PULL_REQUEST_BASE_REF" == "$base_branch" ]]; then
   version=$(git describe --tags --abbrev=0 $(git rev-list --tags --max-count=1 $base_branch))
   reintegrate_branch="reintegrate/$version"
 
@@ -62,7 +62,7 @@ if [[ ${{ github.event.action }} == 'closed' && ${{ github.event.pull_request.me
   PR_TITLE="Reintegrate $version to $branch_name"
 
   curl -X POST \
-    -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
+    -H "Authorization: Bearer $GH_TOKEN" \
     -d '{"title":"'"$PR_TITLE"'","head":"'"$reintegrate_branch"'","base":"'"$branch_name"'"}' \
-    "https://api.github.com/repos/${{ github.repository }}/pulls"
+    "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls"
 fi
