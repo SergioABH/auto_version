@@ -34,7 +34,7 @@ jobs:
           base_branch=$(jq -r .pull_request.base.ref $GITHUB_EVENT_PATH)
           branch_name=$(jq -r .pull_request.head.ref $GITHUB_EVENT_PATH)
 
-          elif [[ $base_branch == 'qa' ]]; then
+          if [[ $base_branch == 'qa' ]]; then
             if [[ $branch_name == 'dev' ]]; then
               if [[ ${{ github.event.action }} == 'closed' && ${{ github.event.pull_request.merged }} == 'true' ]]; then
                 npm version prerelease --preid=beta
