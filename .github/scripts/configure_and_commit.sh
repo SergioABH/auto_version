@@ -11,14 +11,14 @@ branch_name=$Determine_Version_BRANCH_NAME
 github_event_action=$github_event_action
 github_event_pull_request_merged=$github_event_pull_request_merged
 
-package_name=$(node -pe "require('./package.json').name")
+package_version=$(node -pe "require('./package.json').version")
 
 if [[ $base_branch == 'qa' ]]; then
     if [[ $branch_name == 'dev' ]]; then
         if [[ $github_event_action == 'closed' && $github_event_pull_request_merged == 'true' ]]; then
             # Check if the minor version is equal to the QA minor version
             minor_version=$(echo $version | cut -d. -f2)
-            qa_minor_version=$(npm show $package_name version --tag=qa | cut -d. -f2)
+            qa_minor_version=$(npm show $package_version version --tag=qa | cut -d. -f2)
             
             if [[ $minor_version -eq $qa_minor_version ]]; then
                 npm --no-git-tag-version version preminor --preid=beta
