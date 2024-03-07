@@ -5,20 +5,33 @@ echo "Configuring Git"
 git config --global user.email "actions@github.com"
 git config --global user.name "GitHub Actions"
 
+echo "Installing jq"
+apt-get update
+apt-get install jq -y
+
 echo "Determining Version"
 base_branch=$Determine_Version_BASE_BRANCH
 branch_name=$Determine_Version_BRANCH_NAME
 github_event_action=$github_event_action
 github_event_pull_request_merged=$github_event_pull_request_merged
 
-package_version=$(node -pe "require('./package.json').version")
+# Obtener la versión de package.json de la rama correspondiente
+if [[ $branch_name == 'dev' ]]; then
+    dev_version=$(git show $base_branch:package.json | jq -r .version)
+else
+    dev_version=$(node -pe "require('./package.json').version")
+fi
+
+if [[ $base_branch == 'qa' ]]; then
+    qa_version=$(git show $base_branch:package.json | jq -r .version)
+fi
 
 if [[ $base_branch == 'qa' ]]; then
     if [[ $branch_name == 'dev' ]]; then
         if [[ $github_event_action == 'closed' && $github_event_pull_request_merged == 'true' ]]; then
             # Check if the minor version is equal to the QA minor version
-            minor_version=$(echo $version | cut -d. -f2)
-            qa_minor_version=$(npm show $package_version version --tag=qa | cut -d. -f2)
+            minor_version=$(echo $dev_version | cut -d. -f2)
+            qa_minor_version=$(echo $qa_version | cut -d. -f2)
             
             if [[ $minor_version -eq $qa_minor_version ]]; then
                 npm --no-git-tag-version version preminor --preid=beta
