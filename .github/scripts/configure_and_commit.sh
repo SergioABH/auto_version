@@ -81,7 +81,7 @@ if [[ $GITHUB_EVENT_ACTION == 'closed' && $(jq -r '.pull_request.merged' "$GITHU
   PR_TITLE="Reintegrate $version to dev"
 
   curl -X POST \
-    -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
+    -H "Authorization: Bearer $GH_TOKEN" \
     -d '{"title":"'"$PR_TITLE"'","head":"'"$reintegrate_branch"'","base":"dev"}' \
     "https://api.github.com/repos/${{ github.repository }}/pulls"
 fi
