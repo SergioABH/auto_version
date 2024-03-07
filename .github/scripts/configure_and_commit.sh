@@ -26,6 +26,10 @@ branch_name=$Determine_Version_BRANCH_NAME
 github_event_action=$github_event_action
 github_event_pull_request_merged=$github_event_pull_request_merged
 
+# Obtener las versiones de QA y DEV
+qa_version=$(get_version_from_branch 'qa')
+dev_version=$(get_version_from_branch 'dev')
+
 if [[ $base_branch == 'qa' ]]; then
     if [[ $branch_name == 'dev' ]]; then
         if [[ $github_event_action == 'closed' && $github_event_pull_request_merged == 'true' ]]; then
@@ -33,11 +37,15 @@ if [[ $base_branch == 'qa' ]]; then
             qa_version=$(get_version_from_branch 'qa')
             dev_version=$(get_version_from_branch 'dev')
 
-            # Check if the minor version is equal to the QA minor version
-            minor_version=$(echo $dev_version | cut -d. -f2)
-            qa_minor_version=$(echo $qa_version | cut -d. -f2)
-            
-            if [[ $minor_version -eq $qa_minor_version ]]; then
+            # Extraer los componentes de versión
+            qa_major=$(echo $qa_version | cut -d. -f1)
+            qa_minor=$(echo $qa_version | cut -d. -f2)
+
+            dev_major=$(echo $dev_version | cut -d. -f1)
+            dev_minor=$(echo $dev_version | cut -d. -f2)
+
+            # Comparar las versiones y actualizar según tus reglas
+            if [[ $dev_major -eq $qa_major && $dev_minor -eq $qa_minor ]]; then
                 npm --no-git-tag-version version preminor --preid=beta
             else
                 npm --no-git-tag-version version prerelease --preid=beta
