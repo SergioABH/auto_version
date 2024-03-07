@@ -11,19 +11,12 @@ branch_name=$Determine_Version_BRANCH_NAME
 github_event_action=$github_event_action
 github_event_pull_request_merged=$github_event_pull_request_merged
 
-if [[ $branch_name == 'dev' ]]; then
-    dev_version=$(git show $base_branch:package.json | jq -r .version)
-else
-    dev_version=$(node -pe "require('./package.json').version")
-fi
-
-if [[ $base_branch == 'qa' ]]; then
-    qa_version=$(git show $base_branch:package.json | jq -r .version)
-fi
-
 if [[ $base_branch == 'qa' ]]; then
     if [[ $branch_name == 'dev' ]]; then
         if [[ $github_event_action == 'closed' && $github_event_pull_request_merged == 'true' ]]; then
+            dev_version=$(git show $base_branch:package.json | jq -r .version)
+            qa_version=$(git show $base_branch:package.json | jq -r .version)
+
             minor_version=$(echo $dev_version | cut -d. -f2)
             qa_minor_version=$(echo $qa_version | cut -d. -f2)
             
