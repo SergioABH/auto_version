@@ -1,4 +1,4 @@
-name: automatic_version
+name: Automatic_Version
 
 on:
   pull_request:
@@ -15,8 +15,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Grant execute permission to configure_and_commit.sh
+        run: chmod +x ./.github/scripts/configure_and_commit.sh
+
       - name: Configure and Commit
         run: ./.github/scripts/configure_and_commit.sh
+
+      - name: Grant execute permission to reintegrate_changes.sh
+        run: chmod +x ./.github/scripts/reintegrate_changes.sh
 
       - name: Reintegrate Changes
         run: ./.github/scripts/reintegrate_changes.sh
