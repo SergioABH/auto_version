@@ -14,7 +14,15 @@ github_event_pull_request_merged=$github_event_pull_request_merged
 if [[ $base_branch == 'qa' ]]; then
     if [[ $branch_name == 'dev' ]]; then
         if [[ $github_event_action == 'closed' && $github_event_pull_request_merged == 'true' ]]; then
-            npm --no-git-tag-version version prerelease --preid=beta
+            # Check if the minor version is 0 or equal to the QA minor version
+            minor_version=$(echo $version | cut -d. -f2)
+            qa_minor_version=$(npm show your-package-name version --tag=qa | cut -d. -f2)
+            
+            if [[ $minor_version -eq 0 || $minor_version -eq $qa_minor_version ]]; then
+                npm --no-git-tag-version version preminor --preid=beta
+            else
+                npm --no-git-tag-version version prerelease --preid=beta
+            fi
         fi
     elif [[ $branch_name == *fix/* ]]; then
         if [[ $github_event_action == 'closed' && $github_event_pull_request_merged == 'true' ]]; then
