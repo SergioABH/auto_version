@@ -36,10 +36,6 @@ dev_minor=$(get_minor_version_from_branch 'dev')
 if [[ $base_branch == 'qa' ]]; then
   if [[ $branch_name == 'dev' ]]; then
     if [[ $github_event_action == 'closed' && $github_event_pull_request_merged == 'true' ]]; then
-      # Obtener las versiones minor después de verificar el evento cerrado y fusionado
-      qa_minor=$(get_minor_version_from_branch 'qa')
-      dev_minor=$(get_minor_version_from_branch 'dev')
-
       # Comparar las versiones minor
       if [[ $dev_minor -eq $qa_minor ]]; then
         npm --no-git-tag-version version preminor --preid=beta
