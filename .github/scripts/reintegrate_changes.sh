@@ -1,9 +1,6 @@
 #!/bin/bash
 set -e
 
-#!/bin/bash
-set -e
-
 echo "Reintegrating Changes"
 if [[ $github_event_action == 'closed' && $github_event_pull_request_merged == 'true' && $github_event_pull_request_base_ref == 'master' ]]; then
 
@@ -21,3 +18,4 @@ if [[ $github_event_action == 'closed' && $github_event_pull_request_merged == '
         -d '{"title":"'"$PR_TITLE"'","head":"'"$reintegrate_branch"'","base":"dev"}' \
         "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls"
 fi
+
