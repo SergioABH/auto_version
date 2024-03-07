@@ -5,10 +5,6 @@ echo "Configuring Git"
 git config --global user.email "actions@github.com"
 git config --global user.name "GitHub Actions"
 
-echo "Installing jq"
-apt-get update
-apt-get install jq -y
-
 echo "Determining Version"
 base_branch=$Determine_Version_BASE_BRANCH
 branch_name=$Determine_Version_BRANCH_NAME
