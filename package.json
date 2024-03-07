@@ -1,6 +1,6 @@
 {
   "name": "automatic_version",
-  "version": "1.7.0",
+  "version": "1.6.1-beta.2",
   "description": "",
   "main": "index.js",
   "scripts": {
