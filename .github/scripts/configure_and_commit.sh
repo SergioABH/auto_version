@@ -11,10 +11,29 @@ branch_name=$Determine_Version_BRANCH_NAME
 github_event_action=$github_event_action
 github_event_pull_request_merged=$github_event_pull_request_merged
 
+# Obtener la versión de package.json de la rama correspondiente
+if [[ $branch_name == 'dev' ]]; then
+    dev_version=$(git show $base_branch:package.json | jq -r .version)
+else
+    dev_version=$(node -pe "require('./package.json').version")
+fi
+
+if [[ $base_branch == 'qa' ]]; then
+    qa_version=$(git show $base_branch:package.json | jq -r .version)
+fi
+
 if [[ $base_branch == 'qa' ]]; then
     if [[ $branch_name == 'dev' ]]; then
         if [[ $github_event_action == 'closed' && $github_event_pull_request_merged == 'true' ]]; then
-            npm --no-git-tag-version version prerelease --preid=beta
+            # Check if the minor version is equal to the QA minor version
+            minor_version=$(echo $dev_version | cut -d. -f2)
+            qa_minor_version=$(echo $qa_version | cut -d. -f2)
+            
+            if [[ $minor_version -eq $qa_minor_version ]]; then
+                npm --no-git-tag-version version preminor --preid=beta
+            else
+                npm --no-git-tag-version version prerelease --preid=beta
+            fi
         fi
     elif [[ $branch_name == *fix/* ]]; then
         if [[ $github_event_action == 'closed' && $github_event_pull_request_merged == 'true' ]]; then
