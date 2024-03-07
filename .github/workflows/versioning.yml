@@ -23,6 +23,9 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Set GH_TOKEN as environment variable
+        run: echo "GH_TOKEN=${{ secrets.GH_TOKEN }}" >> $GITHUB_ENV
+
       - name: Call configure_and_commit.sh
         run: ./.github/scripts/configure_and_commit.sh "${{ github.event.action }}"
         id: update_and_reintegrate
