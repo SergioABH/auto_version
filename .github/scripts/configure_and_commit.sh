@@ -1,83 +1,87 @@
 #!/bin/bash
-set -e
 
-echo "Configurando Git"
+# Asignar valores de entrada a variables
+GITHUB_EVENT_ACTION="$1"
+
+# Configure Git
 git config --global user.email "actions@github.com"
 git config --global user.name "GitHub Actions"
 
-echo "Determinando versión"
-base_branch=$Determine_Version_BASE_BRANCH
-branch_name=$Determine_Version_BRANCH_NAME
-github_event_action=$github_event_action
-github_event_pull_request_merged=$github_event_pull_request_merged
-
-get_minor_version_from_branch() {
-  local branch_name=$1
-  local package_version
-
-  if [[ $branch_name == 'dev' || $branch_name == 'qa' ]]; then
-    package_version=$(git show $branch_name:package.json | jq -r .version)
-  else
-    package_version=$(node -pe "require('./package.json').version")  
-  fi
-
-  minor_version=$(echo $package_version | cut -d. -f2)
-
-  echo $minor_version
-}
-
-compare_versions() {
-  local dev_version=$1
-  local qa_version=$2
-
-  dev_minor=$(echo $dev_version | cut -d. -f2)
-  qa_minor=$(echo $qa_version | cut -d. -f2)
-  echo "Versión minor dev: $dev_minor"
-  echo "Versión minor qa: $qa_minor"
-
-  if [[ $dev_minor == $qa_minor ]]; then
-    npm --no-git-tag-version version preminor --preid=beta
-  else
-    npm --no-git-tag-version version prerelease --preid=beta
-  fi
-}
+# Determine Version
+base_branch=$(jq -r .pull_request.base.ref "$GITHUB_EVENT_PATH")
+branch_name=$(jq -r .pull_request.head.ref "$GITHUB_EVENT_PATH")
 
 if [[ $base_branch == 'qa' ]]; then
   if [[ $branch_name == 'dev' ]]; then
-    if [[ $github_event_action == 'closed' && $github_event_pull_request_merged == 'true' ]]; then
-      qa_minor=$(get_minor_version_from_branch 'qa')
-      dev_minor=$(get_minor_version_from_branch 'dev')
+    if [[ $GITHUB_EVENT_ACTION == 'closed' && $(jq -r '.pull_request.merged' "$GITHUB_EVENT_PATH") == 'true' ]]; then
+      dev_version_json=$(git show origin/dev:package.json)
+      dev_version=$(echo "$dev_version_json" | jq -r .version)
+      dev_minor=$(echo "$dev_version" | cut -d. -f2)
+      echo "Versión minor dev: $dev_minor"
 
-      compare_versions $dev_minor $qa_minor
+      qa_version=$(git show refs/heads/qa:package.json | jq -r .version)
+      qa_minor=$(echo "$qa_version" | cut -d. -f2)
+      echo "Versión minor qa: $qa_minor"
+
+      if [[ $dev_minor == $qa_minor ]]; then
+        npm --no-git-tag-version version preminor --preid=beta
+      else
+        npm --no-git-tag-version version prerelease --preid=beta
+      fi
     fi
   elif [[ $branch_name == *fix/* ]]; then
-    if [[ $github_event_action == 'closed' && $github_event_pull_request_merged == 'true' ]]; then
+    if [[ $GITHUB_EVENT_ACTION == 'closed' && $(jq -r '.pull_request.merged' "$GITHUB_EVENT_PATH") == 'true' ]]; then
       npm version prepatch --preid=beta
     fi
   fi
 elif [[ $base_branch == 'master' ]]; then
   if [[ $branch_name == 'qa' ]]; then
-    if [[ $github_event_action == 'closed' && $github_event_pull_request_merged == 'true' ]]; then
+    if [[ $GITHUB_EVENT_ACTION == 'closed' && $(jq -r '.pull_request.merged' "$GITHUB_EVENT_PATH") == 'true' ]]; then
       npm version minor
     fi
   elif [[ $branch_name == *fix/* ]]; then
-    if [[ $github_event_action == 'closed' && $github_event_pull_request_merged == 'true' ]]; then
+    if [[ $GITHUB_EVENT_ACTION == 'closed' && $(jq -r '.pull_request.merged' "$GITHUB_EVENT_PATH") == 'true' ]]; then
       npm version patch
     fi
   fi
 fi
 
-echo "Obteniendo nueva versión"
+# Set Outputs
+echo "::set-output name=base_branch::$base_branch"
+echo "::set-output name=branch_name::$branch_name"
+
+# Get New Version
 version=$(npm version)
+echo "::set-output name=version::$version"
 
-echo "Rama base: $base_branch"
-echo "Nombre de la rama: $branch_name"
-echo "Versión: $version"
+# Commit and Push Version Update
+base_branch=${base_branch:-'master'}
+branch_name=${branch_name:-'dev'}
+echo "Base branch: $base_branch"
+echo "Branch name: $branch_name"
+echo "Version: $version"
 
-git fetch origin $base_branch:$base_branch || true
-git checkout $base_branch || true
+git fetch origin "$base_branch":"$base_branch" || true
+git checkout "$base_branch" || true
 
 git add .
-git commit -am "Actualizar versión" || true
-git checkout $base_branch
-git push origin $base_branch --follow-tags || true
+git commit -am "Update version" || true
+git checkout "$base_branch"
+git push origin "$base_branch" --follow-tags || true
+
+# Reintegrate Changes
+if [[ $GITHUB_EVENT_ACTION == 'closed' && $(jq -r '.pull_request.merged' "$GITHUB_EVENT_PATH") == 'true' && $(jq -r '.pull_request.base.ref' "$GITHUB_EVENT_PATH") == 'master' ]]; then
+  version=$(git describe --tags --abbrev=0 $(git rev-list --tags --max-count=1 master))
+  reintegrate_branch="reintegrate/$version"
+
+  git fetch origin master
+  git checkout -b "$reintegrate_branch" master
+  git push origin "$reintegrate_branch"
+
+  PR_TITLE="Reintegrate $version to dev"
+
+  curl -X POST \
+    -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
+    -d '{"title":"'"$PR_TITLE"'","head":"'"$reintegrate_branch"'","base":"dev"}' \
+    "https://api.github.com/repos/${{ github.repository }}/pulls"
+fi
