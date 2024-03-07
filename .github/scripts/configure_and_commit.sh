@@ -5,6 +5,12 @@ echo "Configurando Git"
 git config --global user.email "actions@github.com"
 git config --global user.name "GitHub Actions"
 
+echo "Determinando versión"
+base_branch=$Determine_Version_BASE_BRANCH
+branch_name=$Determine_Version_BRANCH_NAME
+github_event_action=$github_event_action
+github_event_pull_request_merged=$github_event_pull_request_merged
+
 get_minor_version_from_branch() {
   local branch_name=$1
   local package_version
@@ -26,6 +32,8 @@ compare_versions() {
 
   dev_minor=$(echo $dev_version | cut -d. -f2)
   qa_minor=$(echo $qa_version | cut -d. -f2)
+  echo "Versión minor dev: $dev_minor"
+  echo "Versión minor qa: $qa_minor"
 
   if [[ $dev_minor == $qa_minor ]]; then
     npm --no-git-tag-version version preminor --preid=beta
@@ -33,12 +41,6 @@ compare_versions() {
     npm --no-git-tag-version version prerelease --preid=beta
   fi
 }
-
-echo "Determinando versión"
-base_branch=$Determine_Version_BASE_BRANCH
-branch_name=$Determine_Version_BRANCH_NAME
-github_event_action=$github_event_action
-github_event_pull_request_merged=$github_event_pull_request_merged
 
 if [[ $base_branch == 'qa' ]]; then
   if [[ $branch_name == 'dev' ]]; then
