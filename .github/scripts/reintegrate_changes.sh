@@ -15,9 +15,16 @@ if [[ $GITHUB_EVENT_NAME == 'pull_request' && $GITHUB_EVENT_ACTION == 'closed' &
 
     PR_TITLE="Reintegrate $version to dev"
 
+    # Revisa el estado de las ramas para depuración
+    git branch -a
+
+    # Crea la solicitud de extracción
     curl -X POST \
         -H "Authorization: Bearer $GH_TOKEN" \
         -d "{\"title\":\"$PR_TITLE\",\"head\":\"$reintegrate_branch\",\"base\":\"dev\"}" \
         "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls"
+
+    # Revisa si la solicitud de extracción se creó correctamente
+    echo "Pull request created successfully"
 fi
 
