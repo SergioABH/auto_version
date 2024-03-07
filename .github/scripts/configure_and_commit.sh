@@ -31,7 +31,25 @@ elif [[ $base_branch == 'master' ]]; then
             npm version patch
         fi
     fi
-elif [[ $GITHUB_EVENT_NAME == 'pull_request' && $github_event_action == 'closed' && $github_event_pull_request_merged == 'true' && $GITHUB_EVENT_PULL_REQUEST_BASE_REF == 'master' ]]; then
+fi
+
+echo "Getting New Version"
+version=$(npm version)
+
+echo "Base branch: $base_branch"
+echo "Branch name: $branch_name"
+echo "Version: $version"
+
+git fetch origin $base_branch:$base_branch || true
+git checkout $base_branch || true
+
+git add .
+git commit -am "Update version" || true
+git checkout $base_branch
+git push origin $base_branch --follow-tags || true
+
+echo "Reintegrate Changes"
+if [[ $GITHUB_EVENT_NAME == 'pull_request' && $github_event_action == 'closed' && $github_event_pull_request_merged == 'true' && $GITHUB_EVENT_PULL_REQUEST_BASE_REF == 'master' ]]; then
 
     version=$(git describe --tags --abbrev=0 $(git rev-list --tags --max-count=1 master))
     reintegrate_branch="reintegrate/$version"
@@ -49,18 +67,3 @@ elif [[ $GITHUB_EVENT_NAME == 'pull_request' && $github_event_action == 'closed'
 
     echo "Pull request created successfully"
 fi
-
-echo "Getting New Version"
-version=$(npm version)
-
-echo "Base branch: $base_branch"
-echo "Branch name: $branch_name"
-echo "Version: $version"
-
-git fetch origin $base_branch:$base_branch || true
-git checkout $base_branch || true
-
-git add .
-git commit -am "Update version" || true
-git checkout $base_branch
-git push origin $base_branch --follow-tags || true
