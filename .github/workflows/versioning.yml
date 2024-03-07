@@ -30,5 +30,11 @@ jobs:
 
       - name: Configure and Commit
         run: ./.github/scripts/configure_and_commit.sh
+
+      - name: Grant execute permission to reintegrate_changes.sh
+        run: chmod +x ./.github/scripts/reintegrate_changes.sh
+
+      - name: Reintegrate Changes
+        run: ./.github/scripts/reintegrate_changes.sh
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
