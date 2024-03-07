@@ -11,7 +11,6 @@ branch_name=$Determine_Version_BRANCH_NAME
 github_event_action=$github_event_action
 github_event_pull_request_merged=$github_event_pull_request_merged
 
-# Obtener la versión de package.json de la rama correspondiente
 if [[ $branch_name == 'dev' ]]; then
     dev_version=$(git show $base_branch:package.json | jq -r .version)
 else
@@ -25,7 +24,6 @@ fi
 if [[ $base_branch == 'qa' ]]; then
     if [[ $branch_name == 'dev' ]]; then
         if [[ $github_event_action == 'closed' && $github_event_pull_request_merged == 'true' ]]; then
-            # Check if the minor version is equal to the QA minor version
             minor_version=$(echo $dev_version | cut -d. -f2)
             qa_minor_version=$(echo $qa_version | cut -d. -f2)
             
