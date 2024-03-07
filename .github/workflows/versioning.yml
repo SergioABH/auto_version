@@ -37,3 +37,5 @@ jobs:
 
       - name: Reintegrate Changes
         run: ./.github/scripts/reintegrate_changes.sh
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
