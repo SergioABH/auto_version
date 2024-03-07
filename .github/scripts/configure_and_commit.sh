@@ -2,6 +2,8 @@
 
 # Asignar valores de entrada a variables
 GITHUB_EVENT_ACTION="$1"
+GITHUB_REPOSITORY="$2"
+GH_TOKEN="$3"
 
 # Configure Git
 git config --global user.email "actions@github.com"
@@ -83,5 +85,5 @@ if [[ $GITHUB_EVENT_ACTION == 'closed' && $(jq -r '.pull_request.merged' "$GITHU
   curl -X POST \
     -H "Authorization: Bearer $GH_TOKEN" \
     -d '{"title":"'"$PR_TITLE"'","head":"'"$reintegrate_branch"'","base":"dev"}' \
-    "https://api.github.com/repos/${{ github.repository }}/pulls"
+    "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls"
 fi
