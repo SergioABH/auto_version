@@ -10,8 +10,6 @@ base_branch=$Determine_Version_BASE_BRANCH
 branch_name=$Determine_Version_BRANCH_NAME
 github_event_action=$github_event_action
 github_event_pull_request_merged=$github_event_pull_request_merged
-github_event_name=$github_event_name
-github_event_pull_request_base_ref=$github_event_pull_request_base_ref
 
 if [[ $base_branch == 'qa' ]]; then
     if [[ $branch_name == 'dev' ]]; then
