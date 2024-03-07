@@ -15,27 +15,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Determine Version
-        id: determine_version
-        run: |
-          Determine_Version_BASE_BRANCH=$(jq -r .pull_request.base.ref $GITHUB_EVENT_PATH)
-          Determine_Version_BRANCH_NAME=$(jq -r .pull_request.head.ref $GITHUB_EVENT_PATH)
-
-          echo "Determine_Version_BASE_BRANCH=$Determine_Version_BASE_BRANCH" >> $GITHUB_ENV
-          echo "Determine_Version_BRANCH_NAME=$Determine_Version_BRANCH_NAME" >> $GITHUB_ENV
-          echo "github_event_action=${{ github.event.action }}" >> $GITHUB_ENV
-          echo "github_event_pull_request_merged=${{ github.event.pull_request.merged }}" >> $GITHUB_ENV
-
-      - name: Grant execute permission to configure_and_commit.sh
-        run: chmod +x ./.github/scripts/configure_and_commit.sh
-
-      - name: Configure and Commit
-        run: ./.github/scripts/configure_and_commit.sh
-
-      - name: Grant execute permission to reintegrate_changes.sh
-        run: chmod +x ./.github/scripts/reintegrate_changes.sh
-
-      - name: Reintegrate Changes
-        run: ./.github/scripts/reintegrate_changes.sh
+      - name: Configure, Commit, and Reintegrate
+        run: ./.github/scripts/configure_and_commit_and.sh
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
