@@ -18,11 +18,8 @@ jobs:
       - name: Determine Version
         id: determine_version
         run: |
-          Determine_Version_BASE_BRANCH=$(jq -r .pull_request.base.ref $GITHUB_EVENT_PATH)
-          Determine_Version_BRANCH_NAME=$(jq -r .pull_request.head.ref $GITHUB_EVENT_PATH)
-
-          echo "Determine_Version_BASE_BRANCH=$Determine_Version_BASE_BRANCH" >> $GITHUB_ENV
-          echo "Determine_Version_BRANCH_NAME=$Determine_Version_BRANCH_NAME" >> $GITHUB_ENV
+          echo "Determine_Version_BASE_BRANCH=${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref || '' }}" >> $GITHUB_ENV
+          echo "Determine_Version_BRANCH_NAME=${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || '' }}" >> $GITHUB_ENV
           echo "github_event_action=${{ github.event.action }}" >> $GITHUB_ENV
           echo "github_event_pull_request_merged=${{ github.event.pull_request.merged }}" >> $GITHUB_ENV
 
@@ -32,8 +29,21 @@ jobs:
       - name: Configure and Commit
         run: ./.github/scripts/configure_and_commit.sh
 
-      - name: Grant execute permission to reintegrate_changes.sh
-        run: chmod +x ./.github/scripts/reintegrate_changes.sh
-
       - name: Reintegrate Changes
-        run: ./.github/scripts/reintegrate_changes.sh
+        run: |
+          if [[ ${{ github.event.action }} == 'closed' && ${{ github.event.pull_request.merged }} == 'true' && ${{ github.event.pull_request.base.ref }} == 'master' ]]; then
+
+            version=$(git describe --tags --abbrev=0 $(git rev-list --tags --max-count=1 master))
+            reintegrate_branch="reintegrate/$version"
+
+            git fetch origin master
+            git checkout -b $reintegrate_branch master
+            git push origin $reintegrate_branch
+
+            PR_TITLE="Reintegrate $version to dev"
+
+            curl -X POST \
+              -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
+              -d '{"title":"'"$PR_TITLE"'","head":"'"$reintegrate_branch"'","base":"dev"}' \
+              "https://api.github.com/repos/${{ github.repository }}/pulls"
+          fi
