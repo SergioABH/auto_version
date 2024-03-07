@@ -10,6 +10,8 @@ base_branch=$Determine_Version_BASE_BRANCH
 branch_name=$Determine_Version_BRANCH_NAME
 github_event_action=$github_event_action
 github_event_pull_request_merged=$github_event_pull_request_merged
+github_event_name=$github_event_name
+github_event_pull_request_base_ref=$github_event_pull_request_base_ref
 
 if [[ $base_branch == 'qa' ]]; then
     if [[ $branch_name == 'dev' ]]; then
@@ -49,7 +51,14 @@ git checkout $base_branch
 git push origin $base_branch --follow-tags || true
 
 echo "Reintegrate Changes"
-if [[ $GITHUB_EVENT_NAME == 'pull_request' && $github_event_action == 'closed' && $github_event_pull_request_merged == 'true' && $GITHUB_EVENT_PULL_REQUEST_BASE_REF == 'master' ]]; then
+base_branch=$Determine_Version_BASE_BRANCH
+branch_name=$Determine_Version_BRANCH_NAME
+github_event_action=$github_event_action
+github_event_pull_request_merged=$github_event_pull_request_merged
+github_event_name=$github_event_name
+github_event_pull_request_base_ref=$github_event_pull_request_base_ref
+
+if [[ $github_event_name == 'pull_request' && $github_event_action == 'closed' && $github_event_pull_request_merged == 'true' && $github_event_pull_request_base_ref == 'master' ]]; then
 
     version=$(git describe --tags --abbrev=0 $(git rev-list --tags --max-count=1 master))
     reintegrate_branch="reintegrate/$version"

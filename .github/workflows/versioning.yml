@@ -22,6 +22,8 @@ jobs:
           echo "Determine_Version_BRANCH_NAME=${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || '' }}" >> $GITHUB_ENV
           echo "github_event_action=${{ github.event.action }}" >> $GITHUB_ENV
           echo "github_event_pull_request_merged=${{ github.event.pull_request.merged }}" >> $GITHUB_ENV
+          echo "github_event_name=${{ github.event.action }}" >> $GITHUB_ENV
+          echo "github_event_pull_request_base_ref=${{ github.event.pull_request.base.ref }}" >> $GITHUB_ENV
 
       - name: Grant execute permission to configure_and_commit.sh
         run: chmod +x ./.github/scripts/configure_and_commit.sh
