@@ -23,7 +23,7 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Call configure_and_commit.sh
+      - name: configure_and_commit.sh
         run: ./.github/scripts/configure_and_commit.sh ${{ github.event.action }} ${{ github.repository }} ${{ secrets.GH_TOKEN }}
         id: update_and_reintegrate
 
