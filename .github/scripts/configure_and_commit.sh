@@ -26,7 +26,7 @@ compare_versions() {
 
   if [[ $dev_minor -gt $qa_minor ]]; then
     npm --no-git-tag-version version preminor --preid=beta
-  else
+  elif [[ $dev_minor -ne $qa_minor ]]; then
     npm --no-git-tag-version version prerelease --preid=beta
   fi
 }
