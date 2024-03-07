@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Asignar valores de entrada a variables
+GITHUB_EVENT_ACTION="$1"
+
 # Configure Git
 git config --global user.email "actions@github.com"
 git config --global user.name "GitHub Actions"
