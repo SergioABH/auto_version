@@ -24,7 +24,7 @@ jobs:
         run: npm install
 
       - name: Call configure_and_commit.sh
-        run: ./.github/scripts/configure_and_commit.sh
+        run: ./.github/scripts/configure_and_commit.sh "${{ github.event.action }}"
         id: update_and_reintegrate
 
       - name: Set Outputs
