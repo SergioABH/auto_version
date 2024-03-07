@@ -16,6 +16,6 @@ jobs:
           fetch-depth: 0
 
       - name: Configure, Commit, and Reintegrate
-        run: ./.github/scripts/configure_and_commit_and.sh
+        run: ./.github/scripts/configure_and_commit.sh
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
