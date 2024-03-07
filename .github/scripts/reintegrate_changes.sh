@@ -2,7 +2,7 @@
 set -e
 
 echo "Reintegrating Changes"
-if [[ ${{ github.event.action }} == 'closed' && ${{ github.event.pull_request.merged }} == 'true' && ${{ github.event.pull_request.base.ref }} == 'master' ]]; then
+if [[ $github_event_action == 'closed' && $github_event_pull_request_merged == 'true' && $github_event_pull_request_base_ref == 'master' ]]; then
 
     version=$(git describe --tags --abbrev=0 $(git rev-list --tags --max-count=1 master))
     reintegrate_branch="reintegrate/$version"
@@ -14,7 +14,7 @@ if [[ ${{ github.event.action }} == 'closed' && ${{ github.event.pull_request.me
     PR_TITLE="Reintegrate $version to dev"
 
     curl -X POST \
-        -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
+        -H "Authorization: Bearer $GITHUB_TOKEN" \
         -d '{"title":"'"$PR_TITLE"'","head":"'"$reintegrate_branch"'","base":"dev"}' \
-        "https://api.github.com/repos/${{ github.repository }}/pulls"
+        "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls"
 fi
