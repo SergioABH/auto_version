@@ -25,9 +25,9 @@ compare_versions() {
   local qa_minor=$2
 
   if [[ $dev_minor -gt $qa_minor ]]; then
-    npm --no-git-tag-version version minor --preid=beta
-  elif [[ $dev_minor -eq $qa_minor ]]; then
     npm --no-git-tag-version version preminor --preid=beta
+  else
+    npm --no-git-tag-version version prerelease --preid=beta
   fi
 }
 
