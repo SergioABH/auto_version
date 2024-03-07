@@ -21,12 +21,15 @@ get_minor_version_from_branch() {
 }
 
 compare_versions() {
-  local dev_minor=$1
-  local qa_minor=$2
+  local dev_version=$1
+  local qa_version=$2
 
-  if [[ $dev_minor -gt $qa_minor ]]; then
+  dev_minor=$(echo $dev_version | cut -d. -f2)
+  qa_minor=$(echo $qa_version | cut -d. -f2)
+
+  if [[ $dev_minor == $qa_minor ]]; then
     npm --no-git-tag-version version preminor --preid=beta
-  elif [[ $dev_minor -lt $qa_minor ]]; then
+  else
     npm --no-git-tag-version version prerelease --preid=beta
   fi
 }
