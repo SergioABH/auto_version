@@ -1,11 +1,10 @@
 #!/bin/bash
 
-# Asignar valores de entrada a variables
 GITHUB_EVENT_ACTION="$1"
 GITHUB_REPOSITORY="$2"
 GH_TOKEN="$3"
 
-# Configure Git
+#Configure Git
 git config --global user.email "actions@github.com"
 git config --global user.name "GitHub Actions"
 
@@ -48,7 +47,6 @@ elif [[ $base_branch == 'master' ]]; then
   fi
 fi
 
-# Set Outputs
 echo "::set-output name=base_branch::$base_branch"
 echo "::set-output name=branch_name::$branch_name"
 
@@ -57,8 +55,6 @@ version=$(npm version)
 echo "::set-output name=version::$version"
 
 # Commit and Push Version Update
-base_branch=${base_branch:-'master'}
-branch_name=${branch_name:-'dev'}
 echo "Base branch: $base_branch"
 echo "Branch name: $branch_name"
 echo "Version: $version"
