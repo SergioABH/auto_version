@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Asignar valores de entrada a variables
 GITHUB_EVENT_ACTION="$1"
 GITHUB_REPOSITORY="$2"
 GH_TOKEN="$3"
