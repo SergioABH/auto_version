@@ -30,10 +30,6 @@ if [[ $base_branch == 'qa' ]]; then
         npm --no-git-tag-version version prerelease --preid=beta
       fi
     fi
-  elif [[ $branch_name == *fix/* ]]; then
-    if [[ $GITHUB_EVENT_ACTION == 'closed' && $(jq -r '.pull_request.merged' "$GITHUB_EVENT_PATH") == 'true' ]]; then
-      npm version prepatch --preid=beta
-    fi
   fi
 elif [[ $base_branch == 'master' ]]; then
   if [[ $branch_name == 'qa' ]]; then
