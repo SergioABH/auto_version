@@ -27,7 +27,7 @@ jobs:
         run: ./.github/scripts/configure_and_commit.sh ${{ github.event.action }} ${{ github.repository }} ${{ secrets.GH_TOKEN }}
         id: update_and_reintegrate
 
-      - name: Set Outputs
+      - name: Reintegrate
         run: |
           echo "::set-output name=base_branch::${{ steps.update_and_reintegrate.outputs.base_branch }}"
           echo "::set-output name=branch_name::${{ steps.update_and_reintegrate.outputs.branch_name }}"
