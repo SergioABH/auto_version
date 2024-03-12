@@ -2,10 +2,10 @@
 
 base_branch="$1"
 branch_name="$2"
-version="$3"
-GH_TOKEN="$4"
+GH_TOKEN="$3"
 
 if [ "$base_branch" == 'master' ]; then
+  version=$(git describe --tags --abbrev=0 $(git rev-list --tags --max-count=1 master))
   reintegrate_branch="reintegrate/$version"
   git config --global user.email "actions@github.com"
   git config --global user.name "GitHub Actions"
