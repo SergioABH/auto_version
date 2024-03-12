@@ -29,6 +29,7 @@ jobs:
 
   reintegrate:
     needs: version
+    if: ${{ github.event.action == 'closed' && needs.version.outputs.base_branch == 'master' && github.event.pull_request.merged == 'true' }}
     runs-on: ubuntu-latest
 
     steps:
