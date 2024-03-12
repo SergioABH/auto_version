@@ -5,7 +5,9 @@ branch_name="$2"
 GH_TOKEN="$3"
 
 create_branch_and_pr() {
+  echo "Debug: Starting create_branch_and_pr function"
   if [ "$base_branch" == 'master' ]; then
+    echo "Debug: Branch is master"
     reintegrate_branch="reintegrate/$version"
     git config --global user.email "actions@github.com"
     git config --global user.name "GitHub Actions"
@@ -18,6 +20,8 @@ create_branch_and_pr() {
       -H "Authorization: Bearer $GH_TOKEN" \
       -d '{"title":"'"$PR_TITLE"'","head":"'"$reintegrate_branch"'","base":"dev"}' \
       "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls"
+  else
+    echo "Debug: Branch is not master"
   fi
 }
 
