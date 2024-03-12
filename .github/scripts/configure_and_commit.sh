@@ -13,8 +13,8 @@ evaluate_and_set_version() {
   if [[ $GITHUB_EVENT_ACTION == 'closed' && $(jq -r '.pull_request.merged' "$GITHUB_EVENT_PATH") == 'true' ]]; then
     case "$base_branch-$branch_name" in
       'qa-dev')   evaluate_dev_version ;;
-      'master-qa') npm version minor      ;;
-      'master-fix'*) npm version patch    ;;
+      'master-qa') npm version minor && create_tag ;;
+      'master-fix'*) npm version patch && create_tag ;;
       *) echo "Error: Invalid event or branch combination." >&2 ;;
     esac
   else
@@ -36,6 +36,12 @@ evaluate_dev_version() {
     else
       npm --no-git-tag-version version prerelease --preid=beta
     fi
+}
+
+create_tag() {
+  version=$(npm version)
+  git tag -a "$version" -m "Release $version"
+  git push origin "$version"
 }
 
 set_outputs() {
