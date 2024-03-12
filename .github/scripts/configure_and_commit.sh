@@ -4,6 +4,11 @@ GITHUB_EVENT_ACTION="$1"
 GITHUB_REPOSITORY="$2"
 GH_TOKEN="$3"
 
+configure_git() {
+  git config --global user.email "actions@github.com"
+  git config --global user.name "GitHub Actions"
+}
+
 get_branches() {
   base_branch=$(jq -r .pull_request.base.ref "$GITHUB_EVENT_PATH")
   branch_name=$(jq -r .pull_request.head.ref "$GITHUB_EVENT_PATH")
@@ -52,8 +57,6 @@ set_outputs() {
 }
 
 commit_and_push_version_update() {
-  git config --global user.email "actions@github.com"
-  git config --global user.name "GitHub Actions"
   echo "Base branch: $base_branch"
   echo "Branch name: $branch_name"
   git fetch origin "$base_branch":"$base_branch" || true
