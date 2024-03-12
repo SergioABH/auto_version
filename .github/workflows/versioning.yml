@@ -30,21 +30,6 @@ jobs:
         run: ./.github/scripts/configure_and_commit.sh ${{ github.event.action }} ${{ github.repository }} ${{ secrets.GH_TOKEN }}
         id: update_and_reintegrate
 
-  reintegrate:
-    needs: version
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '14'
-
       - name: Make reintegrate.sh executable
         run: chmod +x ./.github/scripts/reintegrate.sh
 
