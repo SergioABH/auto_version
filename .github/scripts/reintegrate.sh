@@ -6,6 +6,7 @@ GH_TOKEN="$3"
 
 create_branch_and_pr() {
   echo "Debug: Starting create_branch_and_pr function"
+  echo "Debug: base_branch is $base_branch"
   if [ "$base_branch" == 'master' ]; then
     echo "Debug: Branch is master"
     reintegrate_branch="reintegrate/$version"
