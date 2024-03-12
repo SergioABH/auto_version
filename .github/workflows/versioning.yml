@@ -27,11 +27,11 @@ jobs:
         run: chmod +x ./.github/scripts/configure_and_commit.sh
 
       - name: configure_and_commit.sh
-        run: ./.github/scripts/configure_and_commit.sh ${{ github.event.action }} ${{ github.repository }} ${{ secrets.GH_TOKEN }}
+        run: ./.github/scripts/configure_and_commit.sh ${{ github.event.action }} ${{ github.repository }}
         id: update_and_reintegrate
 
       - name: Make reintegrate.sh executable
         run: chmod +x ./.github/scripts/reintegrate.sh
 
       - name: Reintegrate
-        run: ./.github/scripts/reintegrate.sh ${{ needs.version.outputs.base_branch }} ${{ needs.version.outputs.branch_name }} ${{ secrets.GH_TOKEN }}
+        run: ./.github/scripts/reintegrate.sh ${{ github.event.action }} ${{ github.repository }} ${{ secrets.GH_TOKEN }}
