@@ -4,7 +4,7 @@ base_branch="$1"
 branch_name="$2"
 GH_TOKEN="$3"
 
-create_branch() {
+create_branch_and_pr() {
     if [ "$base_branch" == 'master' ]; then
     version=$(git describe --tags --abbrev=0 $(git rev-list --tags --max-count=1 master))
     reintegrate_branch="reintegrate/$version"
@@ -13,9 +13,7 @@ create_branch() {
     git fetch origin master
     git checkout -b "$reintegrate_branch" master
     git push origin "$reintegrate_branch"
-}
 
-craete_pull_request() {
     PR_TITLE="Reintegrate $version to dev"
     curl -X POST \
         -H "Authorization: Bearer $GH_TOKEN" \
