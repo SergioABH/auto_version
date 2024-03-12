@@ -31,7 +31,7 @@ evaluate_dev_version() {
     dev_version=$(git show origin/dev:package.json | jq -r .version)
     dev_minor=$(echo "$dev_version" | cut -d. -f2)
     echo "Versión minor dev: $dev_minor"
-
+    
     qa_version=$(git show refs/heads/qa:package.json | jq -r .version)
     qa_minor=$(echo "$qa_version" | cut -d. -f2)
     echo "Versión minor qa: $qa_minor"
