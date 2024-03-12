@@ -7,7 +7,8 @@ GH_TOKEN="$4"
 
 if [ "$base_branch" == 'master' ]; then
   reintegrate_branch="reintegrate/$version"
-
+  git config --global user.email "actions@github.com"
+  git config --global user.name "GitHub Actions"
   git fetch origin master
   git checkout -b "$reintegrate_branch" master
   git push origin "$reintegrate_branch"
