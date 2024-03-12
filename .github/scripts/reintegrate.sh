@@ -12,6 +12,7 @@ create_branch_and_pr() {
   echo "Debug: base_branch is $base_branch"
   if [[ $GITHUB_EVENT_ACTION == 'closed' && $(jq -r '.pull_request.merged' "$GITHUB_EVENT_PATH") == 'true' && $(jq -r '.pull_request.base.ref' "$GITHUB_EVENT_PATH") == 'master' ]]; then
     echo "Debug: Branch is master"
+    version=$(git describe --tags --abbrev=0 $(git rev-list --tags --max-count=1 master))
     reintegrate_branch="reintegrate/$version"
     git config --global user.email "actions@github.com"
     git config --global user.name "GitHub Actions"
