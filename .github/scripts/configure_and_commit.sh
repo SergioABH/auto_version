@@ -36,7 +36,6 @@ evaluate_dev_version() {
     else
       npm --no-git-tag-version version prerelease --preid=beta
     fi
-  fi
 }
 
 set_outputs() {
