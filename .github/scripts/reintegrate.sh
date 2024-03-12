@@ -30,5 +30,5 @@ create_branch_and_pr() {
   fi
 }
 
-# Llama a la función para obtener las ramas
+# Main script
 create_branch_and_pr
