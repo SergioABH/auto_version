@@ -2,7 +2,6 @@
 
 GITHUB_EVENT_ACTION="$1"
 GITHUB_REPOSITORY="$2"
-GH_TOKEN="$3"
 
 configure_git() {
   git config --global user.email "actions@github.com"
