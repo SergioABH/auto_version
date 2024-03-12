@@ -23,13 +23,15 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Make configure_and_commit.sh executable
+        run: chmod +x ./.github/scripts/configure_and_commit.sh
+
       - name: configure_and_commit.sh
         run: ./.github/scripts/configure_and_commit.sh ${{ github.event.action }} ${{ github.repository }} ${{ secrets.GH_TOKEN }}
         id: update_and_reintegrate
 
   reintegrate:
     needs: version
-    if: ${{ github.event.action == 'closed' && needs.version.outputs.base_branch == 'master' && github.event.pull_request.merged == 'true' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -42,6 +44,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '14'
+
+      - name: Make reintegrate.sh executable
+        run: chmod +x ./.github/scripts/reintegrate.sh
 
       - name: Reintegrate
         run: ./.github/scripts/reintegrate.sh ${{ needs.version.outputs.base_branch }} ${{ needs.version.outputs.branch_name }} ${{ needs.version.outputs.version }} ${{ secrets.GH_TOKEN }}
