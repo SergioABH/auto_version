@@ -9,7 +9,6 @@ git config --global user.name "GitHub Actions"
 base_branch=$(jq -r .pull_request.base.ref "$GITHUB_EVENT_PATH")
 branch_name=$(jq -r .pull_request.head.ref "$GITHUB_EVENT_PATH")
 
-
 evaluate_and_set_version() {
   if [[ $GITHUB_EVENT_ACTION == 'closed' && $(jq -r '.pull_request.merged' "$GITHUB_EVENT_PATH") == 'true' ]]; then
     case "$base_branch-$branch_name" in
