@@ -3,15 +3,12 @@
 GITHUB_EVENT_ACTION="$1"
 GITHUB_REPOSITORY="$2"
 
-configure_git() {
-  git config --global user.email "actions@github.com"
-  git config --global user.name "GitHub Actions"
-}
+git config --global user.email "actions@github.com"
+git config --global user.name "GitHub Actions"
 
-get_branches() {
-  base_branch=$(jq -r .pull_request.base.ref "$GITHUB_EVENT_PATH")
-  branch_name=$(jq -r .pull_request.head.ref "$GITHUB_EVENT_PATH")
-}
+base_branch=$(jq -r .pull_request.base.ref "$GITHUB_EVENT_PATH")
+branch_name=$(jq -r .pull_request.head.ref "$GITHUB_EVENT_PATH")
+
 
 evaluate_and_set_version() {
   if [[ $GITHUB_EVENT_ACTION == 'closed' && $(jq -r '.pull_request.merged' "$GITHUB_EVENT_PATH") == 'true' ]]; then
@@ -61,8 +58,6 @@ commit_and_push_version_update() {
 }
 
 # Main script
-configure_git
-get_branches
 evaluate_and_set_version
 set_outputs
 commit_and_push_version_update
