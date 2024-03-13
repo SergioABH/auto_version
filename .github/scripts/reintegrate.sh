@@ -8,14 +8,15 @@ base_branch=$(jq -r .pull_request.base.ref "$GITHUB_EVENT_PATH")
 branch_name=$(jq -r .pull_request.head.ref "$GITHUB_EVENT_PATH")
 
 create_branch_and_pr() {
-  echo "Debug: Starting create_branch_and_pr function"
-  echo "Debug: base_branch is $base_branch"
-  if [[ $GITHUB_EVENT_ACTION == 'closed' && $(jq -r '.pull_request.merged' "$GITHUB_EVENT_PATH") == 'true' && $(jq -r '.pull_request.base.ref' "$GITHUB_EVENT_PATH") == 'master' ]]; then
-    echo "Debug: Branch is master"
+  if [[ $GITHUB_EVENT_ACTION == 'closed' && \
+        $(jq -r '.pull_request.merged' "$GITHUB_EVENT_PATH") == 'true' && \
+        $(jq -r '.pull_request.base.ref' "$GITHUB_EVENT_PATH") == 'master' ]]; then
     version=$(git describe --tags --abbrev=0 $(git rev-list --tags --max-count=1 master))
     reintegrate_branch="reintegrate/$version"
+
     git config --global user.email "actions@github.com"
     git config --global user.name "GitHub Actions"
+
     git fetch origin master
     git checkout -b "$reintegrate_branch" master
     git push origin "$reintegrate_branch"
@@ -26,7 +27,7 @@ create_branch_and_pr() {
       -d '{"title":"'"$PR_TITLE"'","head":"'"$reintegrate_branch"'","base":"dev"}' \
       "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls"
   else
-    echo "Debug: Branch is not master"
+    echo "Branch is not master"
   fi
 }
 
