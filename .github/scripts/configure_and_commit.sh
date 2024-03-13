@@ -16,9 +16,9 @@ get_branches() {
 evaluate_and_set_version() {
   if [[ $GITHUB_EVENT_ACTION == 'closed' && $(jq -r '.pull_request.merged' "$GITHUB_EVENT_PATH") == 'true' ]]; then
     case "$base_branch-$branch_name" in
-      'qa-dev')   evaluate_dev_version ;;
+      'qa-dev') evaluate_dev_version ;;
       'master-qa') npm version minor ;;
-      'master-fix'*) npm version patch ;;
+      *'fix'*) npm version patch ;;
       *) echo "Error: Invalid event or branch combination." >&2 ;;
     esac
   else
